@@ -1,7 +1,5 @@
 // API 代理主逻辑
 async function proxyRequest(apiKeys, requestBody) {
-    const TELEGRAPH_URL = 'https://generativelanguage.googleapis.com/v1beta';
-    
     // 验证 API Keys
     if (!apiKeys) {
         throw new Error('API key is missing.');
@@ -18,44 +16,19 @@ async function proxyRequest(apiKeys, requestBody) {
     // 随机选择一个 API Key
     const selectedApiKey = apiKeyArray[Math.floor(Math.random() * apiKeyArray.length)];
     
-    // 构建请求 URL
-    const url = new URL(TELEGRAPH_URL);
-    url.searchParams.set('key', selectedApiKey);
-
-    // 添加安全设置
-    const newBody = {
-        ...requestBody,
-        safetySettings: [
-            {
-                category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                threshold: 'BLOCK_NONE'
-            },
-            {
-                category: 'HARM_CATEGORY_HATE_SPEECH',
-                threshold: 'BLOCK_NONE'
-            },
-            {
-                category: 'HARM_CATEGORY_HARASSMENT',
-                threshold: 'BLOCK_NONE'
-            },
-            {
-                category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                threshold: 'BLOCK_NONE'
-            },
-            {
-                category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
-                threshold: 'BLOCK_NONE'
-            }
-        ]
-    };
+    // 获取请求 URL
+    const url = new URL(window.location.href);
+    const pathname = url.pathname.replace('/index.html', '');
+    const baseUrl = url.origin + pathname;
+    const finalUrl = `${baseUrl}/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${selectedApiKey}`;
 
     // 发送请求
-    const response = await fetch(url.toString(), {
+    const response = await fetch(finalUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newBody)
+        body: JSON.stringify(requestBody)
     });
 
     // 处理响应
