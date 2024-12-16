@@ -5,6 +5,7 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+# 确保这部分权限配置正确
 permissions:
   contents: read
   pages: write
@@ -22,6 +23,8 @@ jobs:
       
       - name: Setup Pages
         uses: actions/configure-pages@v3
+        with:
+          enablement: true  # 添加这一行
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
